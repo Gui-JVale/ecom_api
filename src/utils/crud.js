@@ -1,7 +1,8 @@
-export const getOne = (model) => async (req, res) => {
+export const getOne = ({ model, checkOwnership }) => async (req, res) => {
+  var owner = checkOwnership ? getOwnership(req.user._id) : {}
   try {
     const doc = await model
-      .findOne({ createdBy: req.user._id, _id: req.params.id })
+      .findOne({ _id: req.params.id, ...owner })
       .lean()
       .exec()
 
@@ -16,9 +17,14 @@ export const getOne = (model) => async (req, res) => {
   }
 }
 
-export const getMany = (model) => async (req, res) => {
+export const getMany = ({ model, checkOwnership }) => async (req, res) => {
+  var owner = checkOwnership ? getOwnership(req.user._id) : {}
+
   try {
-    const docs = await model.find({ createdBy: req.user._id }).lean().exec()
+    const docs = await model
+      .find({ ...owner })
+      .lean()
+      .exec()
 
     res.status(200).json({ data: docs })
   } catch (e) {
@@ -27,10 +33,11 @@ export const getMany = (model) => async (req, res) => {
   }
 }
 
-export const createOne = (model) => async (req, res) => {
-  const createdBy = req.user._id
+export const createOne = ({ model, checkOwnership }) => async (req, res) => {
+  var owner = checkOwnership ? getOwnership(req.user._id) : {}
+
   try {
-    const doc = await model.create({ ...req.body, createdBy })
+    const doc = await model.create({ ...req.body, owner })
     res.status(201).json({ data: doc })
   } catch (e) {
     console.error(e)
@@ -38,16 +45,18 @@ export const createOne = (model) => async (req, res) => {
   }
 }
 
-export const updateOne = (model) => async (req, res) => {
+export const updateOne = ({ model, checkOwnership }) => async (req, res) => {
+  var owner = checkOwnership ? getOwnership(req.user._id) : {}
+
   try {
     const updatedDoc = await model
       .findOneAndUpdate(
         {
-          createdBy: req.user._id,
+          ...owner,
           _id: req.params.id,
         },
         req.body,
-        { new: true }
+        { new: true, useFindAndModify: true }
       )
       .lean()
       .exec()
@@ -63,10 +72,12 @@ export const updateOne = (model) => async (req, res) => {
   }
 }
 
-export const removeOne = (model) => async (req, res) => {
+export const removeOne = ({ model, checkOwnership }) => async (req, res) => {
+  var owner = checkOwnership ? getOwnership(req.user._id) : {}
+
   try {
     const removed = await model.findOneAndRemove({
-      createdBy: req.user._id,
+      ...owner,
       _id: req.params.id,
     })
 
@@ -81,10 +92,16 @@ export const removeOne = (model) => async (req, res) => {
   }
 }
 
-export const crudControllers = (model) => ({
-  removeOne: removeOne(model),
-  updateOne: updateOne(model),
-  getMany: getMany(model),
-  getOne: getOne(model),
-  createOne: createOne(model),
-})
+export const crudControllers = ({ model, checkOwnership = true }) => {
+  return {
+    removeOne: removeOne({ model, checkOwnership }),
+    updateOne: updateOne({ model, checkOwnership }),
+    getMany: getMany({ model, checkOwnership }),
+    getOne: getOne({ model, checkOwnership }),
+    createOne: createOne({ model }),
+  }
+}
+
+function getOwnership(id) {
+  return { createdBy: id }
+}

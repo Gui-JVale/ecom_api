@@ -4,14 +4,14 @@ import { json, urlencoded } from 'body-parser'
 import { connect } from './utils/db'
 import config from './config'
 
+import productsRouter from './resources/product/product.router'
+
 export const app = express()
 
 app.use(json())
 app.use(urlencoded({ extended: true }))
 
-app.get('/', (req, res) => {
-  res.send({ message: 'ok' })
-})
+app.use('/products', productsRouter)
 
 // CONNECT DB AND START app
 export const start = async () => {
