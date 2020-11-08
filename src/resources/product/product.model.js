@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose'
 
-var productSchema = Schema({
+var productSchema = new Schema({
   title: {
     type: String,
     required: true,
