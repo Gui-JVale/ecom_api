@@ -4,9 +4,10 @@ import { json, urlencoded } from 'body-parser'
 import { connect } from './utils/db'
 import config from './config'
 
+import { signin, signup, protect } from './utils/auth'
 import productsRouter from './resources/product/product.router'
 import userRouter from './resources/user/user.router'
-import { signin, signup, protect } from './utils/auth'
+import cartRouter from './resources/cart/cart.router'
 
 export const app = express()
 
@@ -22,9 +23,9 @@ app.post('/signup', signup)
 app.use('/products', productsRouter)
 
 // Auth routes
-app.use('/user', protect)
-app.use('/user', userRouter)
-
+// app.use(protect)
+app.use('/user', protect, userRouter)
+app.use('/cart', protect, cartRouter)
 //======== Start ============
 // Connect DB and start app
 export const start = async () => {

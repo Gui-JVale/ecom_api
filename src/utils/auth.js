@@ -21,19 +21,19 @@ export const signin = async (req, res) => {
   const invalid = 'Incorrect email or password'
 
   if (!email || !password) {
-    return res.status(400).end({ message: 'Need email and password' })
+    return res.status(400).json({ message: 'Need email and password' })
   }
 
   try {
     var user = await User.findOne({ email }).select('email password').exec()
 
     if (!user) {
-      return res.status(401).send(invalid)
+      return res.status(401).json(invalid)
     }
 
     const match = await user.checkPassword(password)
     if (!match) {
-      return res.status(401).send(invalid)
+      return res.status(401).json(invalid)
     }
 
     const token = await newToken(user)
@@ -52,7 +52,7 @@ export const signup = async (req, res) => {
   }
 
   try {
-    var user = await User.create({ email, password })
+    var user = await User.create({ email, password, cart: { items: [] } })
     const token = await newToken(user)
     res.status(201).send({ token })
   } catch (e) {
@@ -78,7 +78,7 @@ export const protect = async (req, res, next) => {
   }
 
   try {
-    var user = await User.findById(payload.id).select('-password').lean().exec()
+    var user = await User.findById(payload.id).select('-password').exec()
   } catch (e) {
     console.error(e)
     res.status(401).end()

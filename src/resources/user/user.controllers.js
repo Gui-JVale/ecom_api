@@ -1,5 +1,10 @@
 import User from './user.model'
 
+export default {
+  me,
+  updateMe,
+}
+
 function me(req, res) {
   if (!req.user) {
     res.status(400).end()
@@ -22,9 +27,4 @@ async function updateMe(req, res) {
     console.error(e)
     res.status(400).end()
   }
-}
-
-export default {
-  me,
-  updateMe,
 }

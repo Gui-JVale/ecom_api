@@ -1,4 +1,5 @@
 import { model, Schema } from 'mongoose'
+import cartSchema from '../cart/cart.model'
 import bcrypt from 'bcrypt'
 
 var userSchema = new Schema(
@@ -13,6 +14,7 @@ var userSchema = new Schema(
       type: String,
       required: true,
     },
+    cart: cartSchema,
   },
   { timestamps: true }
 )
@@ -22,6 +24,7 @@ userSchema.methods.checkPassword = checkPassword
 
 export default model('User', userSchema)
 
+//*========================
 function hashPassword(next) {
   if (!this.isModified('password')) return next()
 
