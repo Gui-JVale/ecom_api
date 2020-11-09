@@ -6,7 +6,9 @@ import config from './config'
 
 import { signin, signup, protect } from './utils/auth'
 import productsRouter from './resources/product/product.router'
+import collectionRouter from './resources/collection/collection.router'
 import userRouter from './resources/user/user.router'
+import orderRouter from './resources/order/order.router'
 import cartRouter from './resources/cart/cart.router'
 
 export const app = express()
@@ -21,11 +23,13 @@ app.post('/signup', signup)
 
 // Partially or non-auth routes
 app.use('/products', productsRouter)
+app.use('/collection', collectionRouter)
 
 // Auth routes
-// app.use(protect)
-app.use('/user', protect, userRouter)
-app.use('/cart', protect, cartRouter)
+app.use(protect)
+app.use('/user', userRouter)
+app.use('/orders', orderRouter)
+app.use('/cart', cartRouter)
 //======== Start ============
 // Connect DB and start app
 export const start = async () => {

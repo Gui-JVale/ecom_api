@@ -52,7 +52,12 @@ export const signup = async (req, res) => {
   }
 
   try {
-    var user = await User.create({ email, password, cart: { items: [] } })
+    var user = await User.create({
+      email,
+      password,
+      cart: { items: [] },
+      orders: [],
+    })
     const token = await newToken(user)
     res.status(201).send({ token })
   } catch (e) {

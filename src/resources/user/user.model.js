@@ -15,6 +15,7 @@ var userSchema = new Schema(
       required: true,
     },
     cart: cartSchema,
+    orders: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
   },
   { timestamps: true }
 )
