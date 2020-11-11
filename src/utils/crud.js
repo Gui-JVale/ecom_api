@@ -93,6 +93,12 @@ export const removeOne = ({ model, checkOwnership }) => async (req, res) => {
 }
 
 export const crudControllers = ({ model, checkOwnership = true }) => {
+  if (typeof model != object) {
+    throw new Error('First paramater must be a mongoose model')
+  }
+  if (typeof checkOwnership != 'boolean') {
+    throw new Error('Second argument must be a boolean')
+  }
   return {
     removeOne: removeOne({ model, checkOwnership }),
     updateOne: updateOne({ model, checkOwnership }),
